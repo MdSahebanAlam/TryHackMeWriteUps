@@ -1,1 +1,319 @@
+Security Operations (TryHackMe)
 
+Overview
+This is an introductory room that explains the role and responsibilities of a Security Operations Center (SOC) team.
+
+Task 1: Introduction to SOC
+A SOC team works 24/7 to monitor and protect an organization’s network from threats and intrusions.
+
+Key Responsibilities
+
+* Identifying vulnerabilities
+* Detecting unauthorized activity
+* Monitoring policy violations
+* Detecting intrusions
+* Supporting incident response
+
+Answers
+Q: What does SOC stand for?
+Security Operations Center
+
+Q: How many hours a day does SOC monitor the network?
+24
+
+Task 2: Elements of Security Operations
+
+Data Sources
+SOC teams rely on various logs to detect and analyze attacks:
+
+* Server logs
+* Firewall logs
+* Endpoint logs
+* DHCP logs
+
+These logs help in identifying suspicious behavior and investigating incidents.
+
+SOC Services
+
+SOC services are divided into two types:
+
+Reactive Services (after an attack)
+
+* Monitoring security alerts
+* Vulnerability management
+* Malware analysis
+* Intrusion detection
+
+Proactive Services (before an attack)
+
+* Network Security Monitoring (NSM)
+* Threat hunting
+* Threat intelligence
+
+Task 3: Practical Scenario
+
+In this task, a simulated attack was observed.
+
+* The attacker was identified using network activity
+* Firewall rules were applied to block malicious traffic
+* All relevant ports from the attacker’s IP were blocked
+
+This successfully stopped the attack and the flag was obtained.
+
+Flag
+THM{ATTACK_BLOCKED}
+
+What I Learned
+
+* SOC teams rely heavily on log analysis
+* Firewall rules can be used to stop active attacks
+* Security work involves both proactive and reactive strategies
+
+
+Notes and Question :
+
+---
+
+# Security Operations Center (SOC) – Study Notes
+
+---
+
+## 1. Introduction (what it is + why it matters)
+
+A 🔵Security Operations Center (SOC) is a centralized team responsible for continuously monitoring and defending an organization’s systems, networks, and data from cyber threats.
+
+In modern organizations, attacks can happen at any time, which is why SOC operates **24/7**. Its main purpose is to detect threats early, respond quickly, and minimize damage.
+
+🟣 The SOC acts as the “defensive brain” of an organization’s cybersecurity infrastructure.
+
+---
+
+## 2. Core Concepts
+
+A 🔵vulnerability is a weakness in a system that can be exploited by attackers. These may exist in software, misconfigurations, or outdated systems.
+
+🔴 Attackers exploit vulnerabilities to gain unauthorized access, escalate privileges, or execute malicious code.
+
+🔵Unauthorized activity refers to actions performed without proper permission, such as logging in using stolen credentials.
+
+🔵Policy violations occur when users break organizational security rules, such as downloading unsafe files or leaking sensitive data.
+
+🔵Intrusions are active attacks where an attacker gains access to systems or networks.
+
+🟣 Incident response is the process of identifying, analyzing, and handling security incidents.
+
+---
+
+## 3. Structure / How It Works
+
+The SOC works by collecting data from multiple sources across the network.
+
+Key data sources include:
+
+* 🔵Server logs (login attempts, system activity)
+* 🔵DNS logs (domain queries made by systems)
+* 🔵Firewall logs (allowed and blocked traffic)
+* 🔵DHCP logs (devices joining the network)
+
+All this data is often centralized in a 🔵SIEM (Security Information and Event Management) system.
+
+🟣 SIEM aggregates logs from different sources and helps correlate events to detect suspicious behavior.
+
+---
+
+## 4. Management / Usage
+
+SOC operations are divided into two major categories:
+
+### Reactive Services
+
+These occur after detecting an attack:
+
+* Monitoring alerts
+* Vulnerability management
+* Malware analysis
+* Intrusion detection
+* Reporting incidents
+
+### Proactive Services
+
+These occur before any attack is detected:
+
+* 🔵Network Security Monitoring (NSM)
+* Threat hunting
+* Threat intelligence
+
+🟣 Proactive security reduces risk by identifying threats before they cause damage.
+
+---
+
+## 5. Security Perspective (how attackers abuse it)
+
+Attackers often try to bypass detection by abusing normal system behavior.
+
+For example:
+
+🔴 Malware can use DNS queries to communicate with malicious servers (covert communication).
+🔴 Attackers may use stolen credentials to appear as legitimate users.
+🔴 Repeated network activity patterns can indicate automated attacks or malware behavior.
+
+🟣 Attackers aim to blend in with normal traffic to avoid detection.
+
+---
+
+## 6. Detection (SOC perspective – what to monitor)
+
+SOC analysts monitor logs and network behavior to detect anomalies.
+
+Key detection indicators include:
+
+* Unusual login patterns
+* Repeated DNS queries at fixed intervals
+* Suspicious outbound connections
+* Unknown devices joining the network
+
+🟣 Pattern recognition is critical for identifying threats.
+
+---
+
+## 7. Defense / Mitigation
+
+When an attack is detected, SOC teams take action to stop it.
+
+🟢 Common defenses include:
+
+* Blocking malicious IPs using firewalls
+* Isolating infected devices
+* Patching vulnerabilities
+* Removing malware
+* Updating security policies
+
+🟣 Quick response reduces damage and prevents further spread.
+
+---
+
+## 8. Advanced Concepts
+
+🔵Network Security Monitoring (NSM) focuses on analyzing network traffic to detect intrusions.
+
+🔵Threat Hunting is a proactive process where analysts assume a breach has occurred and actively search for indicators.
+
+🔵Threat Intelligence involves studying attacker techniques, tools, and behavior to strengthen defenses.
+
+🟣 These advanced methods improve long-term security posture.
+
+---
+
+## 9. Final Understanding (big-picture summary)
+
+A SOC is a critical part of cybersecurity that combines monitoring, analysis, and response.
+
+🟣 It works by:
+
+* Collecting logs
+* Detecting threats
+* Responding to incidents
+* Preventing future attacks
+
+🔴 Attackers constantly evolve, so SOC must continuously improve detection and defense strategies.
+
+🟢 Strong monitoring, quick response, and proactive defense are key to protecting systems.
+
+---
+
+# 🧠 THEORY QUESTIONS (Interview + Revision)
+
+1. What is a Security Operations Center (SOC)?
+2. What are the main responsibilities of a SOC team?
+3. What is a vulnerability and how is it exploited?
+4. What is the difference between intrusion and unauthorized activity?
+5. Explain reactive vs proactive SOC services.
+6. What is SIEM and why is it important?
+7. What are common data sources used by SOC?
+8. What is Network Security Monitoring (NSM)?
+9. How does threat hunting differ from normal monitoring?
+10. How can DNS traffic be used in attacks?
+11. What steps are taken during incident response?
+12. Why is log analysis important in cybersecurity?
+
+---
+
+# 🧪 MCQs (Self-Test)
+
+1. What does SOC stand for?
+   A. Security Operations Control
+   B. Security Operations Center
+   C. System Operations Center
+   Answer: B
+
+---
+
+2. What is a vulnerability?
+   A. A firewall
+   B. A weakness in a system
+   C. A type of attack
+   Answer: B
+
+---
+
+3. Which tool aggregates logs from multiple sources?
+   A. Firewall
+   B. SIEM
+   C. IDS
+   Answer: B
+
+---
+
+4. NSM stands for:
+   A. Network Security Monitoring
+   B. Network System Management
+   C. Network Security Mechanism
+   Answer: A
+
+---
+
+5. Which is a proactive SOC activity?
+   A. Incident response
+   B. Threat hunting
+   C. Malware removal
+   Answer: B
+
+---
+
+6. Which log helps identify domain queries?
+   A. Firewall logs
+   B. DNS logs
+   C. DHCP logs
+   Answer: B
+
+---
+
+7. What is the purpose of DHCP logs?
+   A. Block traffic
+   B. Assign IP addresses
+   C. Detect malware
+   Answer: B
+
+---
+
+8. What indicates suspicious activity?
+   A. Normal browsing
+   B. Repeated DNS queries
+   C. Logged out user
+   Answer: B
+
+---
+
+9. What is the first step after detecting an attack?
+   A. Ignore it
+   B. Respond and contain
+   C. Shut down network permanently
+   Answer: B
+
+---
+
+10. What is threat intelligence?
+    A. Blocking traffic
+    B. Learning attacker behavior
+    C. Installing antivirus
+    Anwer: B

@@ -1,0 +1,102 @@
+Sigma (TryHackMe)
+
+Overview
+This room introduces Sigma, which is a generic rule format used in detection engineering. It helps SOC analysts create detection rules that can work across different SIEM tools.
+
+Task 1: Introduction
+
+Detection engineering is an important role for a SOC analyst. It involves creating rules that help detect threats before they cause damage to systems.
+
+Sigma is used to write these detection rules in a standard format so they can be shared and reused across different platforms.
+
+Task 2: What is Sigma
+
+Sigma is an open source rule format used to detect suspicious activity in log data. It allows analysts to write detection rules once and use them across different SIEM tools.
+
+It solves the problem of different tools using different query languages and makes it easier to share detection logic between analysts.
+
+Sigma is similar to tools like Snort for network traffic and YARA for file detection.
+
+Task 3: Sigma Rule Syntax
+
+Sigma rules are written in YAML format.
+
+YAML is case sensitive and uses spaces for indentation. Key value pairs are written using a colon and lists are written using a dash. Comments are written using the hash symbol.
+
+Each Sigma rule has multiple fields.
+
+Title defines what the rule detects.
+ID is a unique identifier.
+Status shows how mature the rule is, such as stable, test, or experimental.
+Description explains what the rule is designed to detect.
+
+Logsource defines where the logs come from. This includes the product such as Windows or Linux and the category such as process or firewall logs.
+
+Detection is the most important part of the rule. It defines what activity to look for in logs.
+
+Detection has two main components.
+
+Search identifiers define what values or patterns to look for.
+Condition expressions define how those values should be matched.
+
+Two types of data structures are used.
+
+Lists are used when matching any one value. This works like OR logic.
+Maps are used when multiple conditions must be true. This works like AND logic.
+
+Value modifiers help refine detection.
+
+Contains checks if a value exists anywhere in a field.
+Endswith checks if a value appears at the end.
+Startswith checks if a value appears at the beginning.
+
+Conditions define how detection rules behave. They can use AND, OR, and NOT logic to combine or filter results.
+
+False positives refer to normal activity that might trigger alerts.
+Level defines the severity of the alert such as low, medium, high, or critical.
+
+Answers
+
+Which status level could be noisy
+experimental
+
+Detection consists of
+search identifiers
+
+Data structures used
+lists and maps
+
+What I Learned
+
+Sigma allows writing detection rules in a standard format.
+It helps SOC analysts detect threats using log data.
+Detection rules are built using patterns and conditions.
+Understanding logs is essential for writing effective rules.
+
+
+
+# Generic templete of a sigma rule file 
+
+title: #Title of your rule
+id: #Universally Unique Identifier (UUID) Generate one from https://www.uuidgenerator.net
+status: #stage of your rule testing 
+description: #Details about the detection intensions of the rule.
+author: #Who wrote the rule.
+date: #When was the rule written.
+modified: #When was it updated
+logsource:
+  category: #Classification of the log data for detection
+  product: #Source of the log data
+detection:
+  selection:
+    FieldName1: Value #Search identifiers for the detection
+    FieldName2: Value
+  condition: selection #Action to be taken.
+fields: #List of associated fields that are important for the detection
+
+falsepositives: #Any possible false positives that could trigger the rule.
+
+level: medium #Severity level of the detection rule.
+tags: #Associated TTPs from MITRE ATT&CK
+  - attack.credential_access #MITRE Tactic
+  - attack.t1110 #MITRE Technique

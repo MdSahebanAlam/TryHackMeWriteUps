@@ -1,1 +1,274 @@
-Hlw
+Aurora EDR – Interactive Scenario Write-Up
+
+In this task, I investigated suspicious activity on a Windows machine using Aurora EDR through the Windows Event Viewer.
+
+First, I opened **Event Viewer** and navigated to:
+
+```
+Windows Logs → Application
+```
+
+To avoid confusion from previous logs, I cleared all existing events. After that, I ran the provided batch file from the Desktop to generate activity for Aurora to detect.
+
+---
+
+## First Event
+
+I filtered the logs by **Event ID 1** to focus on Sigma rule matches. The first event showed:
+
+* **Rule Title:** Process Reconnaissance Via Wmic.EXE
+* **Rule ID:** 221b251a-357a-49a9-920a-271802777cc0
+* **Rule Level:** medium
+
+This indicated that the system executed a WMIC command, which is commonly used for system reconnaissance.
+
+---
+
+## Second Event
+
+To correctly identify the next event, I cleared the logs again and reran the batch file. This time, I removed the Event ID filter and reviewed all new events.
+
+I found another relevant event:
+
+* **Rule Title:** Suspicious Creation TXT File in User Desktop
+
+---
+
+## Malicious Activity
+
+Based on the rule description, this activity was associated with:
+
+* **Ransomware**
+
+---
+
+## Conclusion
+
+The investigation showed two main suspicious behaviors:
+
+1. Reconnaissance using WMIC
+2. Suspicious file creation linked to ransomware activity
+
+By analyzing Aurora EDR alerts in Event Viewer, I was able to identify both the detection rules and the associated malicious behavior.
+
+###########################################################################################################################################################
+
+
+# **Aurora EDR – Structured Cybersecurity Notes**
+
+---
+
+## **1. Introduction**
+
+🔵 **Endpoint Detection and Response (EDR)** tools are essential security solutions designed to monitor, detect, and respond to suspicious activities on endpoints such as computers and servers.
+
+🟣 **Aurora EDR** is a Sigma-based detection tool that leverages Windows telemetry to identify malicious behavior. It plays a crucial role in modern **SOC (Security Operations Center)** environments by providing visibility into system-level events.
+
+The importance of Aurora lies in its ability to translate detection logic into actionable alerts, helping analysts identify threats such as 🔴 **ransomware**, 🔴 **command execution abuse**, and 🔴 **covert network activity**.
+
+---
+
+## **2. Core Concepts**
+
+At the core of Aurora are several important concepts that define how it operates:
+
+🔵 **Sigma Rules** are standardized detection rules used to identify suspicious behavior across different platforms. These rules define patterns such as process execution or network anomalies.
+
+🔵 **Event Tracing for Windows (ETW)** is a built-in Windows mechanism that logs system-level activities such as process creation, registry changes, and network communication.
+
+🟣 Aurora uses ETW data to match events against Sigma rules and generate alerts. For example, running commands like `whoami /priv` can trigger alerts because they indicate potential 🔴 **privilege enumeration** activity.
+
+Another key concept is 🔵 **Indicators of Compromise (IOCs)**, which include suspicious behaviors like unusual DNS requests or file creation patterns.
+
+---
+
+## **3. Structure / How It Works**
+
+Aurora operates by continuously monitoring system activity through ETW and applying detection logic:
+
+1. System activity occurs (e.g., process execution)
+2. ETW captures the event
+3. Aurora processes the event
+4. Sigma rules are applied
+5. Alerts are generated if a match is found
+
+For example:
+
+* Running a command like `whoami /priv` triggers a 🟣 **process creation alert**
+* Suspicious DNS traffic may indicate 🔴 **Cobalt Strike beaconing**, triggering critical alerts
+
+These alerts are logged in Windows Event Viewer with details such as:
+
+* Rule Title
+* Rule ID
+* Severity Level (e.g., medium, high, critical)
+
+---
+
+## **4. Management / Usage**
+
+Aurora is typically used in SOC environments where analysts:
+
+* Monitor logs in Event Viewer
+* Analyze triggered Sigma rules
+* Investigate suspicious activity
+
+🟣 Analysts often filter events using identifiers such as **Event ID (e.g., 1, 11)** to focus on relevant detections.
+
+Aurora can be configured in different modes:
+
+🟢 **Standard Mode** – Balanced detection
+🟢 **Intense Mode** – Increased visibility and deeper monitoring
+
+Additionally, Aurora can be integrated with 🟢 **SIEM systems** to centralize alerts and improve visibility.
+
+---
+
+## **5. Security Perspective (Attacker View)**
+
+From an attacker’s perspective, Aurora introduces several challenges:
+
+* 🔴 Detection of reconnaissance commands (e.g., WMIC usage)
+* 🔴 Identification of suspicious file creation (e.g., ransomware behavior)
+* 🔴 Monitoring of abnormal network traffic (e.g., DNS beaconing)
+
+However, attackers may attempt to bypass detection using techniques such as:
+
+* 🔴 Disabling ETW logging
+* 🔴 Using named pipes for stealthy communication
+* 🔴 Obfuscating registry changes
+
+These techniques exploit gaps in visibility to evade detection.
+
+---
+
+## **6. Detection (SOC Perspective)**
+
+From a defender’s standpoint, detection involves analyzing:
+
+* 🔵 Process creation events
+* 🔵 Network communication patterns
+* 🔵 File system activity
+* 🔵 Registry modifications
+
+For example:
+
+* Event ID 1 → Process execution detection
+* Event ID 11 → File creation detection
+
+SOC analysts look for:
+
+🟣 Unusual command execution patterns
+🟣 Suspicious file creation in user directories
+🟣 Indicators of ransomware or beaconing
+
+---
+
+## **7. Defense / Mitigation**
+
+To strengthen detection and reduce blind spots:
+
+🟢 Use **Aurora in Intense Mode** for deeper monitoring
+🟢 Combine Aurora with **Sysmon** to capture additional telemetry
+🟢 Monitor ETW integrity using **ETW Canary module**
+🟢 Enable reporting (`--report-stats`) to detect anomalies in event flow
+
+These measures help mitigate risks such as:
+
+* 🔴 ETW tampering
+* 🔴 Missing registry or named pipe visibility
+
+---
+
+## **8. Advanced Concepts**
+
+Aurora has certain **detection gaps** due to ETW limitations:
+
+### Named Pipes
+
+🔴 Attackers use named pipes for stealth communication
+ETW lacks direct visibility into pipe creation
+
+### Registry Events
+
+🔴 Registry changes are difficult to track due to handle-based referencing
+
+### ETW Disabling
+
+🔴 Attackers may patch system calls to disable logging
+
+To address these:
+
+🟢 Use Sysmon for enhanced logging
+🟢 Enable ETW Canary detection
+🟢 Monitor dropped or missing events
+
+---
+
+## **9. Final Understanding**
+
+Aurora EDR provides a powerful detection mechanism by combining:
+
+* 🟣 Sigma rule-based detection
+* 🟣 ETW telemetry
+* 🟣 Real-time alerting
+
+However, like all detection tools, it has limitations that attackers can exploit.
+
+The key takeaway is that **no single tool is sufficient**—effective security requires:
+
+🟢 Layered defenses
+🟢 Multiple data sources
+🟢 Continuous monitoring
+
+Aurora is best used as part of a broader detection ecosystem.
+
+---
+
+📄 Source: 
+
+---
+
+# **Theory Questions**
+
+1. What is Aurora EDR and how does it differ from traditional antivirus solutions?
+2. Explain how Sigma rules are used in detection engineering.
+3. What role does ETW play in Aurora’s functionality?
+4. Why is process creation monitoring important in cybersecurity?
+5. How can attackers abuse ETW to evade detection?
+6. What are the major detection gaps in Aurora?
+7. How does Aurora detect ransomware-like behavior?
+8. Why is combining Aurora with Sysmon recommended?
+9. What is DNS beaconing and why is it suspicious?
+10. How can SOC analysts use Event IDs effectively?
+
+---
+
+# **MCQs**
+
+1. What does EDR stand for?
+2. Aurora primarily relies on which Windows feature?
+3. What type of rules does Aurora use for detection?
+4. Which command can trigger a privilege enumeration alert?
+5. What does Event ID 1 typically represent?
+6. What type of attack is associated with suspicious TXT file creation?
+7. What protocol is commonly used in beaconing attacks?
+8. Which feature helps detect ETW tampering?
+9. What is a limitation of ETW regarding named pipes?
+10. Which tool complements Aurora for better logging?
+
+---
+
+## **Answers**
+
+1. Endpoint Detection and Response
+2. Event Tracing for Windows (ETW)
+3. Sigma Rules
+4. whoami /priv
+5. Process creation
+6. Ransomware
+7. DNS
+8. ETW Canary
+9. No direct visibility into pipe creation
+10. Sysmon
+

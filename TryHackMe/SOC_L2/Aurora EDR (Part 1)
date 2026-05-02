@@ -1,0 +1,318 @@
+
+Aurora EDR Writeup
+
+This room introduces Endpoint Detection and Response and explains how Aurora works as a Sigma based detection tool.
+
+Task 1 Introduction
+This room focuses on understanding EDR, Event Tracing for Windows, and Aurora. The goal is to learn how detection works on endpoints and how alerts are generated using logs. Some prerequisite rooms mentioned include Windows Event Logs, Sysmon, and Sigma, but the Security Fundamentals path can be used as an alternative.
+
+Task 2 EDR Definition
+EDR stands for Endpoint Detection and Response. It is used to monitor activity on endpoints such as computers and servers. Unlike perimeter security tools, EDR focuses on detecting threats directly on the system.
+
+The main functions of an EDR include collecting data from endpoints, analyzing that data to detect suspicious behavior, and responding to threats automatically or manually. It also helps with investigation and threat hunting.
+
+EDR collects telemetry data such as process activity, file changes, network communication, and user actions. It analyzes this data to identify patterns of attacks. It can also respond by isolating systems, deleting files, or alerting analysts.
+
+Answer
+What does EDR stand for
+Endpoint Detection and Response
+
+Task 3 Event Tracing for Windows
+Event Tracing for Windows is a built in logging system in Windows that records system and application events. It is an important source of data for detection.
+
+ETW has three main components. Controllers manage logging sessions. Providers generate events. Consumers read and analyze those events.
+
+Logs are viewed using the Windows Event Viewer. Logs are divided into categories such as Application, System, and Security. These logs include information, warnings, errors, and audit events.
+
+Answer
+Which applications produce event logs
+Providers
+
+Applications that subscribe to logs are called
+Consumers
+
+Which event level describes a major problem
+Error
+
+Which log category records running programs
+System
+
+Task 4 Aurora
+Aurora is a Windows endpoint agent that uses Sigma rules and indicators of compromise to detect threats. It collects data using ETW and matches it against detection rules.
+
+Aurora only logs events when a rule is triggered. This reduces noise and makes analysis easier compared to tools like Sysmon.
+
+Aurora can be customized with different rule sets and can run locally without sending data outside the network. There are two versions, Aurora and Aurora Lite. The main difference is that the full version includes additional rule sets and features.
+
+Aurora uses presets to control detection behavior. These presets are Standard, Reduced, Minimal, and Intense. The Intense preset detects more events and uses the highest CPU.
+
+Aurora can be run from the command line or as a service. It also provides useful options such as checking status, tracing events, and exporting logs.
+
+Aurora supports multiple output methods including Event Viewer, log files, and network output.
+
+Aurora can also perform response actions when a rule is triggered. These include killing a process, suspending it, or creating a memory dump. Custom actions can also be defined.
+
+Aurora uses event IDs to categorize alerts. For example, Event ID 1 represents process creation and Event ID 103 indicates that the Aurora agent has stopped.
+
+Answers
+Which preset uses highest CPU
+Intense
+
+Which process is affected by ancestor level 3
+Great grandparent
+
+Which event ID shows Aurora agent termination
+103
+
+
+###################################################################################################################################################################################
+
+
+
+🧠 Endpoint Detection & Response (EDR) + ETW + Aurora — Study Notes
+
+
+
+ 1. Introduction
+
+🔵 **Endpoint Detection and Response (EDR)** is a cybersecurity solution designed to monitor, detect, and respond to threats directly on endpoint devices such as laptops, servers, and workstations.
+
+Unlike traditional perimeter defenses, EDR focuses on internal visibility, making it essential in modern environments where threats often bypass firewalls.
+
+🟣 The importance of EDR lies in its ability to provide **near real-time monitoring, threat detection, and automated response**, helping organizations quickly identify and contain attacks before they escalate.
+
+---
+
+ 2. Core Concepts
+
+🔵 **Endpoint** refers to any device connected to a network that can be targeted by attackers.
+
+🔵 **Telemetry Data** includes system activities such as process execution, file access, network connections, and user actions collected from endpoints.
+
+🔵 **Indicators of Compromise (IOCs)** are known patterns (like malicious file hashes or IPs) that signal a breach.
+
+🟣 EDR solutions rely on continuous data collection and analysis to detect abnormal behavior rather than just known signatures.
+
+🔵 **Event Tracing for Windows (ETW)** is a Windows logging mechanism that captures system-level events from applications and kernel processes.
+
+ETW consists of three main components:
+
+* 🔵 **Providers** → Generate event logs
+* 🔵 **Controllers** → Manage tracing sessions
+* 🔵 **Consumers** → Receive and analyze events
+
+🟣 This architecture allows defenders to observe deep system activity for detection purposes.
+
+---
+
+## 3. Structure / How It Works
+
+An EDR system operates in two major phases:
+
+### Data Collection
+
+EDR collects telemetry such as:
+
+* Process executions
+* File operations
+* Network communications
+* User activity
+
+🟣 This aggregated data forms the foundation for threat detection.
+
+### Data Analysis & Detection
+
+The collected data is analyzed using:
+
+* Signature-based detection (IOCs)
+* Behavior-based rules
+* Threat intelligence
+
+🔴 Attackers may attempt to blend malicious actions with normal system behavior to evade detection.
+
+Once a threat is identified, the system can:
+
+* Alert analysts
+* Contain affected systems
+* Trigger automated responses
+
+---
+
+## 4. Management / Usage
+
+EDR solutions provide multiple operational capabilities:
+
+🔵 **Detection** → Identifies suspicious or malicious activity
+🔵 **Response** → Contains threats (e.g., killing processes, isolating hosts)
+🔵 **Integration** → Works with other security tools (SIEM, AV)
+🔵 **Insights** → Uses AI/ML for behavior analysis
+🔵 **Forensics** → Investigates past incidents and builds timelines
+
+🟣 These features enable both proactive and reactive security operations.
+
+---
+
+## 5. Security Perspective (Attacker View)
+
+🔴 Attackers often attempt to evade EDR systems by:
+
+* Using **living-off-the-land binaries (LOLBins)**
+* Injecting malicious code into legitimate processes
+* Disabling logging or security tools
+* Generating minimal detectable activity
+
+🔴 Advanced threats may exploit **detection gaps** in logging or filtering mechanisms.
+
+🟣 Because EDR relies heavily on visibility, any blind spots can be leveraged by attackers.
+
+---
+
+## 6. Detection (SOC Perspective)
+
+From a SOC analyst’s viewpoint, detection relies heavily on logs and event monitoring.
+
+### Windows Event Logs
+
+Windows categorizes logs into:
+
+* 🔵 **Application Logs** → Application-level events
+* 🔵 **System Logs** → OS and system processes
+* 🔵 **Security Logs** → Authentication and access events
+
+Event severity levels include:
+
+* 🔵 Information
+* 🔵 Warning
+* 🔵 Error
+* 🔵 Success Audit
+* 🔵 Failure Audit
+
+🟣 Analysts must correlate these logs to identify suspicious patterns.
+
+### ETW-Based Detection
+
+🟣 ETW provides **deep visibility into system internals**, making it highly valuable for detecting stealthy attacks.
+
+---
+
+## 7. Defense / Mitigation
+
+🟢 Effective defenses using EDR include:
+
+* Continuous endpoint monitoring
+* Automated threat containment (kill/suspend processes)
+* Threat hunting using behavior patterns
+* Integration with threat intelligence feeds
+* Regular rule updates (Sigma rules, IOCs)
+
+🟢 Using tools like Aurora enhances detection through structured rule-based analysis.
+
+---
+
+## 8. Advanced Concepts (Aurora EDR)
+
+🔵 **Aurora** is a Sigma-based EDR agent that uses ETW data to detect threats.
+
+🟣 It focuses on **rule-based detection using Sigma rules and IOCs**.
+
+### Key Features
+
+* Sigma rule matching
+* IOC-based detection
+* Low log volume (only logs triggered events)
+* Response actions (kill, suspend, dump)
+* Multiple output formats (EventLog, file, network)
+
+### Preset Configurations
+
+Aurora offers different operational modes:
+
+* Minimal
+* Reduced
+* Standard
+* Intense
+
+🟣 These control **CPU usage and detection sensitivity**.
+
+### Response Mechanism
+
+Aurora supports:
+
+* 🔵 Predefined responses → kill, suspend, dump
+* 🔵 Custom responses → execute scripts or commands
+
+🔴 Improper response configuration may disrupt legitimate processes.
+
+### Event IDs
+
+Aurora uses **event IDs** to classify detections:
+
+* Process creation → ID 1
+* Network activity → ID 3
+* File creation → ID 11
+* Agent termination → ID 103
+
+🟣 These IDs help analysts quickly understand the nature of alerts.
+
+---
+
+ 9. Final Understanding
+
+🟣 EDR solutions are critical for modern cybersecurity because they provide **deep visibility, detection, and response at the endpoint level**.
+
+🟣 Technologies like ETW enhance detection by exposing low-level system activity, while tools like Aurora leverage **Sigma rules and structured detection logic**.
+
+🔴 However, attackers continuously evolve techniques to evade detection, making it essential to maintain updated rules, monitor logs effectively, and understand system behavior deeply.
+
+🟢 A strong EDR strategy combines **visibility, detection, response, and continuous improvement**.
+
+
+
+ 🧪 Theory Questions
+
+1. What is Endpoint Detection and Response (EDR), and why is it important?
+2. How does EDR differ from traditional antivirus solutions?
+3. Explain the role of telemetry data in EDR.
+4. What are Indicators of Compromise (IOCs)?
+5. Describe the components of Event Tracing for Windows (ETW).
+6. How do Sigma rules enhance detection capabilities?
+7. What are the key differences between ETW and Sysmon?
+8. How do attackers attempt to evade EDR systems?
+9. What is the significance of event logs in SOC operations?
+10. Explain Aurora’s response mechanisms.
+
+
+
+📝 MCQs
+
+ Questions
+
+1. What does EDR stand for?
+2. Which component in ETW generates logs?
+3. Which log level indicates a serious issue?
+4. What type of logs record login attempts?
+5. Which Aurora preset has the highest CPU usage?
+6. What is the purpose of Sigma rules?
+7. Which Aurora event ID indicates agent termination?
+8. What type of detection uses behavior analysis?
+9. What is the role of telemetry data?
+10. Which response action stops a process temporarily?
+
+
+ Answers
+
+1. Endpoint Detection and Response
+2. Providers
+3. Error
+4. Security logs
+5. Intense
+6. Detect threats using structured rules
+7. 103
+8. Behavioral detection
+9. Collect system activity data
+10. Suspend
+
+
+
+
+

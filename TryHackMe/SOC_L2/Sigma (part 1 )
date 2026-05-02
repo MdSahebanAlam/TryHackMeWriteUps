@@ -30,6 +30,11 @@ ID is a unique identifier.
 Status shows how mature the rule is, such as stable, test, or experimental.
 Description explains what the rule is designed to detect.
 
+
+
+
+
+
 Logsource defines where the logs come from. This includes the product such as Windows or Linux and the category such as process or firewall logs.
 
 Detection is the most important part of the rule. It defines what activity to look for in logs.
@@ -98,5 +103,262 @@ falsepositives: #Any possible false positives that could trigger the rule.
 
 level: medium #Severity level of the detection rule.
 tags: #Associated TTPs from MITRE ATT&CK
+
+
+
+
+#########################################################################################################################################################################################################################
+
+
+## 1. Introduction
+
+🔵 Sigma rules are written using **YAML (YAML Ain’t Markup Language)**, a human-readable data format commonly used for configuration files.
+
+🟣 The purpose of Sigma syntax is to provide a **structured and standardized way** to describe detection logic across different SIEM platforms.
+
+This matters because detection rules must be **clear, portable, and easy to share**, allowing SOC analysts to quickly identify threats across different environments without rewriting queries for each tool.
+
+---
+
+## 2. Core Concepts
+
+🔵 A Sigma rule is composed of multiple key fields such as **title, id, status, description, logsource, detection, and metadata**.
+
+🔵 The **title** defines what the rule detects, while the **description** explains the malicious behavior in detail.
+
+🔵 The **status** indicates how mature the rule is. For example,
+
+* experimental rules may still be noisy
+* stable rules are ready for production
+
+🟣 The most important part is the **detection section**, which contains:
+
+* 🔵 search identifiers → what to look for in logs
+* 🔵 condition expressions → how to evaluate matches
+
+🔴 If detection logic is weak or incorrect, attackers can bypass monitoring, making this section critical.
+
+---
+
+## 3. Structure / How It Works
+
+A Sigma rule follows a structured YAML format where each component defines part of the detection logic.
+
+🔵 The **logsource** specifies where logs come from, such as Windows or Linux systems, and what category of logs is being analyzed (for example, process creation or WMI events).
+
+🔵 The **detection section** defines the behavior to match. This includes:
+
+* fields from logs (e.g., CommandLine, Image)
+* values to search for
+
+🟣 Detection logic works using two structures:
+
+* 🔵 Lists → behave like OR conditions
+* 🔵 Maps → behave like AND conditions
+
+For example, matching multiple command line values using lists means any one match can trigger detection, while maps require multiple conditions to be true.
+
+---
+
+## 4. Management / Usage
+
+Sigma rules are created and managed by SOC analysts as part of detection engineering workflows.
+
+🟣 The process includes:
+
+* writing rules in YAML format
+* defining detection logic
+* converting rules into SIEM queries
+
+🟢 Analysts must ensure proper formatting rules such as:
+
+* correct indentation (spaces only, no tabs)
+* proper use of key value pairs
+* correct file extension (.yml)
+
+Proper rule management ensures that detections are **consistent, reusable, and maintainable**.
+
+---
+
+## 5. Security Perspective
+
+🔴 Attackers use techniques such as persistence mechanisms, command execution, and log tampering to avoid detection.
+
+For example:
+
+* using WMI event subscriptions for persistence
+* clearing logs using tools like rm or shred
+
+🟣 Sigma rules are designed to detect these behaviors by focusing on patterns in logs rather than relying on signatures alone.
+
+🔴 Poorly written rules may lead to false negatives, allowing attackers to remain undetected.
+
+---
+
+## 6. Detection (SOC Perspective)
+
+SOC analysts rely heavily on the **detection section** of Sigma rules.
+
+🔵 Search identifiers define what values to look for, such as specific command line arguments or file paths.
+
+🔵 Condition expressions determine how detection is triggered. These include:
+
+* AND and OR logic
+* NOT conditions
+* combinations of multiple identifiers
+
+🟣 Value modifiers play a key role in detection:
+
+* contains → match anywhere
+* endswith → match at the end
+* startswith → match at the beginning
+* all → require all values to match
+
+🔴 Incorrect use of modifiers can result in missed detections or excessive false positives.
+
+---
+
+## 7. Defense / Mitigation
+
+🟢 Effective use of Sigma rules helps organizations detect and respond to threats early.
+
+Key practices include:
+
+* tuning rules to reduce false positives
+* validating detection logic with real logs
+* mapping detections to MITRE ATTACK techniques
+
+🟢 Including false positive definitions helps analysts avoid unnecessary alerts and focus on real threats.
+
+---
+
+## 8. Advanced Concepts
+
+🟣 Sigma supports advanced detection logic using:
+
+* complex condition expressions
+* multiple filters
+* combinations of lists and maps
+
+🔴 Detection rules can include exclusions to filter out known benign activity, such as legitimate software processes.
+
+🟣 Advanced conditions like:
+
+* selection and not filters
+* combining multiple identifiers
+
+allow precise and flexible detection engineering.
+
+---
+
+## 9. Final Understanding
+
+Sigma syntax provides a **powerful and flexible way** to define detection logic in a standardized format.
+
+🟣 The effectiveness of Sigma depends on:
+
+* understanding log data
+* correctly structuring detection logic
+* applying appropriate conditions and modifiers
+
+🔴 Weak syntax or incorrect logic can result in missed attacks or noisy alerts.
+
+🟢 Strong Sigma rules improve detection accuracy and enable better threat visibility across environments.
+
+---
+
+# Theory Questions
+
+1. What is YAML and why is it used in Sigma rules
+2. What are the key components of a Sigma rule
+3. What is the purpose of the detection section in Sigma
+4. What is the difference between search identifiers and condition expressions
+5. How do lists and maps differ in Sigma detection logic
+6. What are value modifiers and why are they important
+7. How does the logsource field affect detection
+8. What is the significance of rule status levels
+9. Why is rule tuning important in detection engineering
+10. How do Sigma rules help detect attacker behavior
+
+---
+
+# MCQs
+
+1. What format is used to write Sigma rules
+   A. XML
+   B. YAML
+   C. JSON
+   D. HTML
+
+2. Which field defines where logs come from
+   A. detection
+   B. logsource
+   C. title
+   D. tags
+
+3. What does the detection section contain
+   A. File names only
+   B. Search identifiers and conditions
+   C. Network logs
+   D. Metadata
+
+4. Which structure behaves like OR logic
+   A. Maps
+   B. Lists
+   C. Tags
+   D. Filters
+
+5. Which modifier matches values anywhere in a field
+   A. startswith
+   B. endswith
+   C. contains
+   D. equal
+
+6. What does the status field represent
+   A. File size
+   B. Rule maturity
+   C. Network speed
+   D. Log source
+
+7. Which of the following is a type modifier
+   A. contains
+   B. all
+   C. re
+   D. endswith
+
+8. What does NOT condition do
+   A. Matches everything
+   B. Excludes matches
+   C. Creates logs
+   D. Encrypts data
+
+9. Which field is used to describe detection purpose
+   A. description
+   B. id
+   C. tags
+   D. level
+
+10. Why are false positives included in rules
+    A. To increase alerts
+    B. To reduce unnecessary alerts
+    C. To delete logs
+    D. To encrypt data
+
+
+
+# MCQ Answers
+
+1. B
+2. B
+3. B
+4. B
+5. C
+6. B
+7. C
+8. B
+9. A
+10. B
+
+
   - attack.credential_access #MITRE Tactic
   - attack.t1110 #MITRE Technique

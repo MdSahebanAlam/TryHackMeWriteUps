@@ -1,0 +1,344 @@
+Sigma Room Writeup (TryHackMe)
+
+Overview
+This room focuses on Sigma, which is a generic rule format used for writing detection rules across different SIEM platforms. It also covers how to convert Sigma rules into queries and use them for threat detection and investigation.
+
+
+
+Task 4: Rule Writing and Conversion
+
+In this task, I was given a scenario where AnyDesk, a legitimate remote access tool, could be used by an attacker to gain unauthorized access. The goal was to analyze the provided intelligence and create a Sigma rule to detect its installation.
+
+From the intelligence, I identified key indicators such as the installation commands that contained arguments like --install and --start-with-win. These were important because they indicated silent installation of AnyDesk.
+
+I created a Sigma rule using process creation logs on Windows systems. The detection logic was based on command line arguments that contained both installation parameters.
+
+After writing the Sigma rule, I converted it into an Elastic (Lucene) query using Uncoder. The generated query contained unnecessary wildcards and escaping characters, so I cleaned it manually.
+
+I used the following query to search in Kibana:
+
+process.command_line:*--install* AND process.command_line:*--start-with-win*
+
+Using this query, I was able to find the process creation event for AnyDesk installation. From the log details, I extracted the required information.
+
+Answers
+
+The tool used to convert Sigma rules is
+Sigmac
+
+The time the AnyDesk installation event was created is
+Jun 28, 2022 @ 22:19:00
+
+The version of AnyDesk installed is
+7.0.10
+
+
+
+Task 5: SecOps Decisions
+
+This section explains that Sigma rule conversion is not always consistent across tools. Different tools such as Sigmac and Uncoder may produce slightly different queries because of differences in field mappings and backend configurations.
+
+As a SOC analyst, it is important to understand the logs and adjust queries accordingly instead of relying completely on automated tools.
+
+No answers were required in this section.
+
+
+
+Task 6: Practical Scenario
+
+In this scenario, I had to detect two types of activity:
+
+1. Scheduled task creation
+2. Ransomware file creation
+
+
+Scheduled Task Detection
+
+I started by searching for schtasks in Kibana since it is the Windows command used to manage scheduled tasks.
+
+From the logs, I identified the command used to create a scheduled task. I analyzed the command line and extracted the relevant details.
+
+Answers
+
+The detection value used for the rule is
+\schtasks.exe
+
+The name of the scheduled task created is
+spawn
+
+The time the task is scheduled to run is
+20:10
+
+
+
+Ransomware Detection
+
+For ransomware detection, I focused on file creation activity involving .txt files. Since the file was created using cmd.exe, I searched for command line activity involving .txt.
+
+I identified the command that created the file and extracted the file name.
+
+To determine the event code, I initially checked process creation events but realized that ransomware file creation corresponds to Sysmon file creation events.
+
+Answers
+
+The appropriate logsource category is
+file_event
+
+The name of the created file is
+YOUR_FILES.txt
+
+The event code associated with the activity is
+11
+
+The contents of the ransomware file are
+T1486 - Purelocker Ransom Note
+
+
+###################################################################################################################################################################################################################################
+# Sigma Detection Engineering Notes
+
+---
+
+## 1. Introduction
+
+🔵 Sigma is a **generic rule format** used to describe detection logic across multiple SIEM platforms. Instead of writing different queries for tools like Elastic, Splunk, or QRadar, Sigma allows analysts to define detections once and convert them into platform-specific queries.
+
+🟣 The main purpose of Sigma is to **standardize detection engineering**, making it easier to share and reuse detection rules across organizations.
+
+This is important because in real-world environments, SOC teams rely heavily on detection rules to identify suspicious activities such as unauthorized remote access, persistence mechanisms, and ransomware behavior.
+
+---
+
+## 2. Core Concepts
+
+🔵 A Sigma rule consists of structured fields such as **logsource, detection, and metadata**.
+
+🔵 The **logsource** defines where the logs come from, such as Windows process creation or file events.
+
+🔵 The **detection section** contains the logic used to identify suspicious activity. This usually includes fields like command line arguments, process names, or file paths.
+
+🟣 Sigma rules are not executed directly. They must be converted into SIEM-specific queries using tools like Sigmac or Uncoder.
+
+🔴 Attackers often use legitimate tools such as AnyDesk or Windows utilities like schtasks to maintain access, making detection based on behavior more important than just identifying malicious files.
+
+---
+
+## 3. Structure / How It Works
+
+A Sigma rule follows a structured format:
+
+* Title and description define what the rule detects
+* Logsource specifies the system and type of logs
+* Detection defines the matching conditions
+* Metadata adds context such as severity and MITRE ATTACK tags
+
+🟣 For example, detecting AnyDesk installation involves monitoring process creation logs and identifying command line arguments like:
+
+--install
+--start-with-win
+
+These indicate silent installation and persistence behavior.
+
+Once written, the rule is converted into a SIEM query and used to search logs.
+
+---
+
+## 4. Management / Usage
+
+Sigma rules are used in SOC environments to:
+
+* Detect suspicious activity
+* Generate alerts
+* Support investigations
+
+🟣 The workflow typically involves:
+
+1. Analyze threat intelligence
+2. Extract indicators (commands, paths, behaviors)
+3. Write Sigma rule
+4. Convert rule using tools like Sigmac or Uncoder
+5. Test in SIEM (e.g., Kibana)
+
+🟢 Analysts must manually refine queries after conversion because tools may introduce incorrect escaping or unsupported fields.
+
+---
+
+## 5. Security Perspective
+
+🔴 Attackers abuse legitimate tools to avoid detection. Examples include:
+
+* Using AnyDesk for remote access
+* Using schtasks to create persistence
+* Using cmd.exe with echo to create ransomware notes
+
+🟣 These are examples of **Living Off The Land (LOLBins)** techniques.
+
+🔴 Because these tools are legitimate, detection must focus on **behavior patterns**, not just file names.
+
+---
+
+## 6. Detection (SOC Perspective)
+
+SOC analysts monitor logs such as:
+
+* 🔵 process_creation events
+* 🔵 file_event logs
+
+For example:
+
+* Scheduled task detection uses:
+  schtasks.exe with /create
+
+* Ransomware detection focuses on:
+  creation of .txt files using cmd.exe
+
+🟣 A key learning is that:
+
+* Event ID 1 → process creation
+* Event ID 11 → file creation
+
+🔴 Missing the correct event type can lead to incorrect detection.
+
+---
+
+## 7. Defense / Mitigation
+
+🟢 Effective defenses include:
+
+* Monitoring command line arguments for suspicious patterns
+* Restricting unauthorized installation of remote tools
+* Logging and analyzing file creation events
+* Implementing least privilege access
+
+🟢 Regularly updating detection rules based on threat intelligence improves security posture.
+
+---
+
+## 8. Advanced Concepts
+
+🟣 Sigma rule conversion is not always consistent.
+
+Different tools:
+
+* Sigmac
+* Uncoder
+
+may produce different outputs due to:
+
+* Field mapping differences
+* Backend configurations
+
+🔴 Blindly trusting automated conversion can lead to failed detections.
+
+🟣 Analysts must validate and adjust queries manually.
+
+---
+
+## 9. Final Understanding
+
+Sigma provides a **standardized way to write detection logic**, but its effectiveness depends on:
+
+* Understanding logs
+* Adjusting queries for the environment
+* Focusing on attacker behavior
+
+🟣 The most important skill is not writing rules, but **thinking like an analyst**:
+
+* Identify behavior
+* Map it to logs
+* Build detection
+
+
+
+# Theory Questions
+
+1. What is Sigma and why is it used in detection engineering
+2. What is the purpose of the detection section in a Sigma rule
+3. Why must Sigma rules be converted before use
+4. What challenges arise during Sigma rule conversion
+5. How do attackers use legitimate tools to evade detection
+6. What is the difference between process creation and file creation events
+7. Why is behavior-based detection important in cybersecurity
+8. What role does command line analysis play in detection
+9. How do SOC analysts validate detection rules
+10. Why is understanding log sources critical for detection
+
+
+
+# MCQs
+
+1. What is Sigma primarily used for
+   A. Malware development
+   B. Detection rule standardization
+   C. Network scanning
+   D. Encryption
+
+2. Which tool converts Sigma rules
+   A. Nmap
+   B. Sigmac
+   C. Metasploit
+   D. Wireshark
+
+3. Which log type is used for process execution
+   A. file_event
+   B. process_creation
+   C. network_event
+   D. dns_log
+
+4. What does schtasks.exe indicate
+   A. File deletion
+   B. Scheduled task management
+   C. Network scanning
+   D. Encryption
+
+5. Which event ID represents file creation in Sysmon
+   A. 1
+   B. 3
+   C. 11
+   D. 22
+
+6. Which command is commonly used to create a file in Windows
+   A. touch
+   B. echo
+   C. nano
+   D. ls
+
+7. What does --install indicate
+   A. File deletion
+   B. Installation process
+   C. Network scan
+   D. Encryption
+
+8. What is the main risk of using AnyDesk in attacks
+   A. Data encryption
+   B. Remote access persistence
+   C. Network scanning
+   D. Password hashing
+
+9. Why are Sigma tools not always reliable
+   A. They are outdated
+   B. They produce inconsistent field mappings
+   C. They do not support Windows
+   D. They are slow
+
+10. What is the main focus of SOC detection
+    A. File names
+    B. Behavior patterns
+    C. File size
+    D. File color
+
+
+
+# MCQ Answers
+
+1. B
+2. B
+3. B
+4. B
+5. C
+6. B
+7. B
+8. B
+9. B
+10. B
+

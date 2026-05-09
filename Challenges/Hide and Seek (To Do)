@@ -1,0 +1,248 @@
+To complete rooms like this effectively, you need three layers of knowledge:
+
+1. Linux fundamentals
+2. Persistence & attacker techniques
+3. SOC / DFIR investigation workflow
+
+Here’s a structured roadmap you can keep revisiting while doing TryHackMe rooms.
+
+---
+
+# Core Topics You Need To Understand
+
+# Important Linux Locations For SOC & DFIR
+
+## `/etc`
+
+Configuration directory.
+
+### Important files:
+
+* `/etc/passwd` → user accounts
+* `/etc/shadow` → password hashes
+* `/etc/sudoers` → sudo permissions
+* `/etc/crontab` → scheduled tasks
+* `/etc/systemd/system/` → custom services
+* `/etc/profile` → shell startup commands
+* `/etc/ssh/sshd_config` → SSH configuration
+
+### Why SOC analysts check it:
+
+Attackers modify configs for persistence.
+
+---
+
+## `/var/log`
+
+Main logging directory.
+
+### Important logs:
+
+* `auth.log` → logins, sudo, SSH
+* `syslog` → general system events
+* `kern.log` → kernel events
+* `journal/` → systemd logs
+* `apache2/` or `nginx/` → web server logs
+
+### Why important:
+
+Primary evidence source during investigations.
+
+---
+
+## `/home`
+
+User directories.
+
+### Common attacker activity:
+
+* malicious scripts
+* SSH keys
+* hidden files (`.something`)
+* reverse shells
+* credential theft tools
+
+---
+
+## `/root`
+
+Root user’s home directory.
+
+### Important because:
+
+* attackers target root persistence
+* privileged SSH keys
+* hidden scripts
+* bash startup files
+
+---
+
+## `/tmp`
+
+Temporary storage.
+
+### Important:
+
+Attackers often:
+
+* drop malware here
+* run payloads
+* store temporary scripts
+
+Because:
+
+* writable by everyone
+* often ignored
+
+---
+
+## `/proc`
+
+Virtual filesystem showing live system state.
+
+### Useful files:
+
+* `/proc/<PID>/cmdline`
+* `/proc/<PID>/exe`
+* `/proc/net/tcp`
+
+### Why important:
+
+Used for live process investigation.
+
+---
+
+## `/dev`
+
+Device files.
+
+### Interesting clue:
+
+You found:
+
+```text id="a9r2kb"
+/dev/null
+```
+
+mapped to `.bash_history`.
+
+That disables shell history logging.
+
+Very common attacker technique.
+
+---
+
+# Important Commands For SOC Analysts
+
+## File Investigation
+
+```bash id="q7n5zx"
+ls -la
+find /
+grep -R
+cat
+less
+strings
+file
+stat
+```
+
+---
+
+## Service Investigation
+
+```bash id="t6j8cw"
+systemctl
+journalctl
+service
+ps aux
+```
+
+---
+
+## Network Investigation
+
+```bash id="r4f1yb"
+ss -tulpn
+netstat -antp
+lsof -i
+```
+
+---
+
+## User Investigation
+
+```bash id="v8d3lm"
+who
+w
+last
+lastlog
+id
+```
+
+---
+
+# Persistence Locations Attackers Commonly Abuse
+
+## System Startup
+
+```text id="s6q4pm"
+/etc/systemd/system/
+/etc/init.d/
+/etc/rc.local
+```
+
+## Scheduled Execution
+
+```text id="h1n7uz"
+/etc/crontab
+/etc/cron.d/
+/var/spool/cron/
+```
+
+## User Login Execution
+
+```text id="u3p9ko"
+~/.bashrc
+~/.profile
+~/.bash_profile
+```
+
+## SSH Access
+
+```text id="k7w1vd"
+~/.ssh/authorized_keys
+```
+
+---
+
+# Skills That Make Linux DFIR Easier
+
+## Must Learn Well
+
+* grep
+* find
+* systemctl
+* journalctl
+* permissions
+* bash scripting basics
+* regular expressions
+* process analysis
+
+---
+
+# One Very Important SOC Mindset
+
+When investigating Linux:
+
+## Always ask:
+
+* What starts automatically?
+* What executes repeatedly?
+* What survives reboot?
+* What runs as root?
+* What communicates externally?
+* What hides itself?
+* What disables logging?
+
+That mindset is exactly what this room is teaching you.
